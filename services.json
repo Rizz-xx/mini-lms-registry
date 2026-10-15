@@ -1,0 +1,23 @@
+{
+  "services": [
+    { "name": "auth-service", "baseUrl": "http://localhost", "port": 8001 },
+    { "name": "user-service", "baseUrl": "http://localhost", "port": 8002 },
+    { "name": "course-service", "baseUrl": "http://localhost", "port": 8003 },
+    {
+      "name": "assignment-service",
+      "baseUrl": "http://localhost",
+      "port": 8004
+    },
+    {
+      "name": "submission-service",
+      "baseUrl": "http://localhost",
+      "port": 8000
+    },
+    { "name": "grading-service", "baseUrl": "http://localhost", "port": 8006 },
+    {
+      "name": "notification-service",
+      "baseUrl": "http://localhost",
+      "port": 8007
+    }
+  ]
+}

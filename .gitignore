@@ -1,0 +1,7 @@
+# Mengabaikan file sistem operasi
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Mengabaikan file log atau cache PHP (jika ada)
+*.log
