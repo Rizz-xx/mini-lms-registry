@@ -4,18 +4,36 @@ $requestUri = $_SERVER['REQUEST_URI'];
 
 // Contoh route melalui gateway untuk submission-service
 if (strpos($requestUri, '/gateway/submissions') !== false) {
-    // 1. Ambil data dari Registry Server (misal berjalan di port yang sama atau beda)
-    $registryJson = file_get_contents('http://localhost:8005/registry.php/api/registry/submission-service');
-    $registryData = json_decode($registryJson, true);
-
-    if (!$registryData || !$registryData['success']) {
+    // 1. Baca file services.json lokal
+    $servicesFile = __DIR__ . '/services.json';
+    
+    if (!file_exists($servicesFile)) {
         http_response_code(500);
-        echo json_encode(["success" => false, "message" => "Gagal mengambil data dari Registry."]);
+        echo json_encode(["success" => false, "message" => "File services.json tidak ditemukan."]);
         exit;
     }
 
-    $service = $registryData['data'];
-    $targetBaseUrl = "{$service['baseUrl']}:{$service['port']}";
+    $jsonContent = file_get_contents($servicesFile);
+    $servicesData = json_decode($jsonContent, true);
+
+    // Cari konfigurasi "submission-service" di dalam array services
+    $targetService = null;
+    if (isset($servicesData['services']) && is_array($servicesData['services'])) {
+        foreach ($servicesData['services'] as $service) {
+            if (isset($service['name']) && $service['name'] === 'submission-service') {
+                $targetService = $service;
+                break;
+            }
+        }
+    }
+
+    if (!$targetService) {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Service 'submission-service' tidak ditemukan di services.json."]);
+        exit;
+    }
+
+    $targetBaseUrl = rtrim($targetService['baseUrl'], '/') . ':' . $targetService['port'];
     
     // Sesuaikan path tujuan ke submission service asli
     $subPath = str_replace('/gateway/submissions', '/index.php/api/submissions', $requestUri);
